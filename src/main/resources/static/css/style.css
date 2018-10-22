@@ -1,0 +1,53 @@
+@charset "ISO-8859-1";
+body{
+	background-color:LightGray;
+}
+.page{
+	margin-top: 13%;
+	width: 50%;
+}
+
+.formInputs{
+	width: 60%;
+	margin: auto;
+	margin-bottom: 3%;
+}
+
+
+.ui-fieldset .ui-fieldset-legend{
+	width: 40%;
+	height: 50px;
+}
+
+.info{
+	list-style: none;
+	margin-top: 5px;
+	font-size: 14px;
+}
+
+.info_2{
+	margin-top: 5px;
+	margin-bottom: 2%;
+}
+
+.images{
+	margin: auto;
+	width: 100px;
+	height: 100px;
+}
+
+.opt1{
+	margin-left: 10%
+}
+.opt2{
+	margin-left: 40%;
+}
+
+.links{
+	/*border: 1px black solid;*/
+	float: left;
+}
+
+.linkText{
+	margin: auto;
+}

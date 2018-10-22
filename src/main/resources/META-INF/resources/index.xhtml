@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:p="http://primefaces.org/ui" 
+  xmlns:f="http://java.sun.com/jsf/core">
+<h:head>
+	<meta charset="ISO-8859-1"/>
+	<title>Simple Data Validation Tool</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+  	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+  	<link rel="stylesheet" href="/css/style.css"/>
+</h:head>
+<h:body>
+	<div class="container page">
+		<p:panel header="CSV Validation Tool">
+			This is an automation of some csv validation tasks:
+			<ul class="info">
+				<li>Separate records in source file not found in target file and vice versa</li>
+				<li class="info_2">Split concatenated columns in IPOLYF10 and IPOLYF11 into respective columns for ease of validation</li>
+			</ul>
+			
+			<h:form>
+				<p:fieldset styleClass="formInputs" legend="Select task">
+					<p:commandLink>
+						<span class="links opt1">
+							<h:graphicImage class="images" value="/images/filter.png"/><br/>
+							<span class="linkText">Filter records</span>
+						</span>	
+					</p:commandLink>
+					
+					<p:commandLink>
+						<span class="links opt2">
+							<h:graphicImage class="images " value="/images/split.png"/><br/>
+							<span class="linkText">Split Columns</span>
+						</span>	
+					</p:commandLink>
+					
+				</p:fieldset>
+			</h:form>
+		</p:panel>
+	</div>
+</h:body>
+</html>
