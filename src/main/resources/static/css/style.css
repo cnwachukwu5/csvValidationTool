@@ -51,3 +51,11 @@ body{
 .linkText{
 	margin: auto;
 }
+
+.filterExtracts{
+	margin-top: 10%;
+}
+
+.ui-dialog-buttonpane{
+	margin-left: 10px;
+}

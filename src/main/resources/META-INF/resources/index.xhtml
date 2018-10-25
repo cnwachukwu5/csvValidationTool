@@ -2,13 +2,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:p="http://primefaces.org/ui" 
-  xmlns:f="http://java.sun.com/jsf/core">
+  xmlns:f="http://java.sun.com/jsf/core" 
+  xmlns:b="http://bootsfaces.net/ui">
 <h:head>
 	<meta charset="ISO-8859-1"/>
 	<title>Simple Data Validation Tool</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1"/>
   	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
-  	<link rel="stylesheet" href="/css/style.css"/>
+  	<link rel="stylesheet" href="/css/style.css" />
 </h:head>
 <h:body>
 	<div class="container page">
@@ -21,14 +22,14 @@
 			
 			<h:form>
 				<p:fieldset styleClass="formInputs" legend="Select task">
-					<p:commandLink>
+					<p:commandLink onclick="$('.filterExtracts').modal()">
 						<span class="links opt1">
 							<h:graphicImage class="images" value="/images/filter.png"/><br/>
 							<span class="linkText">Filter records</span>
 						</span>	
 					</p:commandLink>
 					
-					<p:commandLink>
+					<p:commandLink onclick="$('.splitIPoly').modal()">
 						<span class="links opt2">
 							<h:graphicImage class="images " value="/images/split.png"/><br/>
 							<span class="linkText">Split Columns</span>
@@ -39,5 +40,38 @@
 			</h:form>
 		</p:panel>
 	</div>
+	<h:form>
+		<b:modal id="filterfiles" widgetVar="filterfiles" title="Filter Records" styleClass="filterExtracts" size="modal-lg" style="margin-top: 10%" closable="false" close-on-escape="false" backdrop="false">
+			<p:messages id ="uploadform"/>
+			<p:fileUpload class="uploader" fileUploadListener="#{fileBean.handleUploadedFile_Source}" mode="advanced" dragDropSupport="false" update="uploadform label msg" allowTypes="/(\.|\/)(csv)$/" />
+			
+			<p:outputLabel id="label" value="#{fileBean.message}" />
+			
+			<p:commandButton id="msg" widgetVar="confirmButton" actionListener="#{fileBean.processFiles()}" style="display: none">
+				<p:confirm header="Confirmation" message="#{fileBean.message}" icon="ui-icon-alert" />
+			</p:commandButton>
+			
+			<p:confirmDialog global="true" id="uploadCfrm" appendTo="@(filterfiles)">			
+				<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"  update="uploadform" />
+				<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+			
+			<f:facet name="footer">
+    			<b:button value="Close" dismiss="modal" />
+    		</f:facet>	
+		</b:modal>
+	
+		<b:modal id="splitIpolyFiles" title="Split Columns" styleClass="splitIPoly" size="modal-lg" style="margin-top: 10%" closable="false" close-on-escape="false" backdrop="false">
+			<p>Test</p>
+			<f:facet name="footer">
+    			<b:button value="Close" dismiss="modal" />
+    		</f:facet>	
+		</b:modal>
+	</h:form>
+	<h:outputScript>
+		function closeUploader(){
+			$('.uploader').css('display', 'none');
+		}
+	</h:outputScript>
 </h:body>
 </html>
