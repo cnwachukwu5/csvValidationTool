@@ -1,4 +1,29 @@
 @charset "ISO-8859-1";
+
+@media only screen and (max-width: 400px){
+	body{
+		background: red;
+	}
+	.images{
+		width: 20px;
+		height: auto;
+	}
+	.ui-fieldset-legend{
+		font-size: 10px;
+	}
+	
+}
+
+@media only screen and (min-width: 401px ) and (max-width: 950px){
+	body{
+		background: blue;
+	}
+	.images{
+		width: 60px;
+		height: auto;
+	}
+	
+}
 body{
 	background-color:LightGray;
 }
@@ -15,14 +40,15 @@ body{
 
 
 .ui-fieldset .ui-fieldset-legend{
-	width: 40%;
-	height: 50px;
+	width: 30%;
+	height: 35px;
+	font-size: 12px;
 }
 
 .info{
 	list-style: none;
 	margin-top: 5px;
-	font-size: 14px;
+	font-size: 13px;
 }
 
 .info_2{
@@ -32,8 +58,8 @@ body{
 
 .images{
 	margin: auto;
-	width: 100px;
-	height: 100px;
+	width: 60px;
+	height: 60px;
 }
 
 .opt1{
@@ -50,12 +76,17 @@ body{
 
 .linkText{
 	margin: auto;
+	font-size: 12px;
 }
 
 .filterExtracts{
 	margin-top: 10%;
 }
 
-.ui-dialog-buttonpane{
-	margin-left: 10px;
+.ui-dialog-footer{
+	padding: 10%;
+}
+
+.assumptions{
+	list-style: none;
 }

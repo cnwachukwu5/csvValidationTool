@@ -1,0 +1,6 @@
+FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("File load completed"));
+			PrimeFaces pf = PrimeFaces.current();
+			pf.ajax().update("acceptedMessage");
+			
+			
+onclick="PF('showLoader').hide()"

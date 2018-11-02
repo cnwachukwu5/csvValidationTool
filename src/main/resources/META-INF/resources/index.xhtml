@@ -13,48 +13,110 @@
 </h:head>
 <h:body>
 	<div class="container page">
+	
 		<p:panel header="CSV Validation Tool">
-			This is an automation of some csv validation tasks:
-			<ul class="info">
-				<li>Separate records in source file not found in target file and vice versa</li>
-				<li class="info_2">Split concatenated columns in IPOLYF10 and IPOLYF11 into respective columns for ease of validation</li>
-			</ul>
-			
-			<h:form>
-				<p:fieldset styleClass="formInputs" legend="Select task">
-					<p:commandLink onclick="$('.filterExtracts').modal()">
-						<span class="links opt1">
-							<h:graphicImage class="images" value="/images/filter.png"/><br/>
-							<span class="linkText">Filter records</span>
-						</span>	
-					</p:commandLink>
+			<div class="row">
+				This is an automation of some csv validation tasks:
+				<ul class="info">
+					<li>Separate records in source file not found in target file and vice versa</li>
+					<li class="info_2">Split concatenated columns in IPOLYF10 and IPOLYF11 into respective columns for ease of validation</li>
+				</ul>
+			</div>
+			<div class="row">
 					
-					<p:commandLink onclick="$('.splitIPoly').modal()">
-						<span class="links opt2">
-							<h:graphicImage class="images " value="/images/split.png"/><br/>
-							<span class="linkText">Split Columns</span>
-						</span>	
-					</p:commandLink>
+				<h:form>
 					
-				</p:fieldset>
-			</h:form>
+					<p:fieldset styleClass="formInputs" legend="Select task">
+						<div class="col-md-6 col-lg-6">
+							<p:commandLink onclick="$('.filterExtracts').modal(); OpenUploader();">
+								<span class="links opt1">
+									<h:graphicImage class="images img-responsive" value="/images/filter.png"/><br/>
+									<span class="linkText">Filter records</span>
+								</span>	
+							</p:commandLink>
+					 	</div>
+					 	<div class="col-md-6 col-lg-6">
+						<p:commandLink onclick="$('.splitIPoly').modal()">
+							<span class="links opt2">
+								<h:graphicImage class="images img-responsive" value="/images/split.png"/><br/>
+								<span class="linkText">Split Columns</span>
+							</span>	
+						</p:commandLink>
+						</div>
+					</p:fieldset>
+				</h:form>
+				
+			</div>
 		</p:panel>
+		<p></p>
 	</div>
-	<h:form>
-		<b:modal id="filterfiles" widgetVar="filterfiles" title="Filter Records" styleClass="filterExtracts" size="modal-lg" style="margin-top: 10%" closable="false" close-on-escape="false" backdrop="false">
+	<h:form id="processingFiles" prependId="false">
+		<b:modal id="filterfiles" widgetVar="filterfiles" title="Filter Records" styleClass="filterExtracts" size="modal-lg" style="margin-top: 5%" closable="false" close-on-escape="false" backdrop="false">
 			<p:messages id ="uploadform"/>
-			<p:fileUpload class="uploader" fileUploadListener="#{fileBean.handleUploadedFile_Source}" mode="advanced" dragDropSupport="false" update="uploadform label msg" allowTypes="/(\.|\/)(csv)$/" />
+			<b:panel title="User guide" id="instruction" collapsible="false">
+				<p>Click on the button to select files. </p>
+				<div>Some instructions:
+				 
+					<ul class="assumptions">
+						<li>Clicking on the "+ Choose" button will prompt you to upload the files.</li>
+						<li>First uploaded file is assumed the source file (EDW)</li>
+						<li>Second uploaded file is target file (ODW)</li>
+					</ul>
+			 	</div>
+				<p:fileUpload class="uploader" fileUploadListener="#{fileBean.handleUploadedFile_Source}" mode="advanced" dragDropSupport="false" update="uploadform msg" allowTypes="/(\.|\/)(csv)$/" />
+			</b:panel>
 			
-			<p:outputLabel id="label" value="#{fileBean.message}" />
 			
-			<p:commandButton id="msg" widgetVar="confirmButton" actionListener="#{fileBean.processFiles()}" style="display: none">
+			<b:panel title="Stats" id="stat" collapsible="false" style="display:none">
+				<p:panelGrid columns="2">
+					<span>Number of records in Source (EDW): </span> <p:outputLabel value="#{fileBean.instance.edw_Records.size() }"/>
+					<span>Number of records in target (ODW): </span><p:outputLabel value="#{fileBean.instance.odw_Records.size() }"/>
+					
+					<span>Number of records in source and target: </span><p:outputLabel value="#{fileBean.instance.records_In_EDW_And_In_ODW.size() }"/>
+					<span>Number of records in source and not in target: </span><p:outputLabel value="#{fileBean.instance.records_In_EDW_Not_In_ODW.size() }"/>
+					<span>Number of records in target and source: </span><p:outputLabel value="#{fileBean.instance.records_In_ODW_And_In_EDW.size() }"/>
+					<span>Number of records in target and not in source: </span><p:outputLabel value="#{fileBean.instance.records_In_ODW_Not_In_EDW.size() }"/>
+				</p:panelGrid>
+			</b:panel>
+			
+			<b:panel title="Downloads" id="download" collapsible="false" style="display:none">
+				<p:panelGrid columns="4">
+					<p:commandButton value="Records in Source and Target" ajax="false" action="#{fileBean.downloadRecord(fileBean.instance.records_In_EDW_And_In_ODW, 'inEDWAndODW') }" />
+					<p:commandButton value="Records in Target and Source" ajax="false" action="#{fileBean.downloadRecord(fileBean.instance.records_In_ODW_And_In_EDW, 'inODWAndEDW') }"/>
+					<p:commandButton value="Records in Source and not Target" ajax="false" action="#{fileBean.downloadRecord(fileBean.instance.records_In_EDW_Not_In_ODW, 'inEDWAndNotInODW') }" disabled="#{fileBean.instance.records_In_EDW_Not_In_ODW.size() == 0 }"/>
+					<p:commandButton value="Records in Target and not Source"  ajax="false" action="#{fileBean.downloadRecord(fileBean.instance.records_In_ODW_Not_In_EDW, 'inODWAndNotInEDW') }" disabled="#{fileBean.instance.records_In_ODW_Not_In_EDW.size() == 0 }"/>				
+				</p:panelGrid>
+			</b:panel>
+			
+			<p:commandButton id="msg" widgetVar="confirmButton" actionListener="#{fileBean.processFiles()}" style="display: none" update="stat" oncomplete="showStat();">
 				<p:confirm header="Confirmation" message="#{fileBean.message}" icon="ui-icon-alert" />
+				<p:ajaxStatus onstart="PF('showLoader').show()" onsuccess="PF('showLoader').hide()" oncomplete="PF('showLoader').hide()"  />
 			</p:commandButton>
 			
 			<p:confirmDialog global="true" id="uploadCfrm" appendTo="@(filterfiles)">			
-				<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"  update="uploadform" />
-				<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"  update="uploadform showLoader" onclick="closeUploader()" />
+				<p:commandButton value="No" actionListener="#{fileBean.resetStreams()}" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
 			</p:confirmDialog>
+			
+			<p:commandButton widgetVar="errorReport" style="display:none" action="#{fileBean.showMessage()}" onclick="closePanel();" />
+			
+			<p:commandButton widgetVar="sortRecords" style="display:none" actionListener="#{fileBean.sortRecords()}"/>
+				
+			
+			
+			
+			
+			
+			
+			<p:dialog id="showLoader" widgetVar="showLoader" draggable="false" closable="false" resizable="false" showHeader="false" >
+				<p:outputLabel value="Processing please wait ..."/><br/>
+				<h:graphicImage value="/images/ajax-loader.gif" style="margin-left: 45%"/>
+			</p:dialog>
+			
+			<p:dialog widgetVar="Notice" draggable="false" closable="false" resizable="false" header="Simple Validation Tool">
+				<p:outputLabel value="Files too large"/><br/>
+				<b:button value="Close" onclick="PF('Notice').hide();" />
+			</p:dialog>
 			
 			<f:facet name="footer">
     			<b:button value="Close" dismiss="modal" />
@@ -69,8 +131,27 @@
 		</b:modal>
 	</h:form>
 	<h:outputScript>
+		$(document).ready(function(){
+			
+		});
+		function loadData(){
+			$('#processingFiles #task').val("Loading data");
+		}
 		function closeUploader(){
 			$('.uploader').css('display', 'none');
+		}
+		
+		function closePanel(){
+			$('#filterfiles').modal('hide');
+		}
+		
+		function OpenUploader(){
+			$('.uploader').css('display', 'block');
+		}
+		
+		function showStat(){
+			$('#stat').css('display', 'block');
+			$('#download').css('display', 'block');
 		}
 	</h:outputScript>
 </h:body>
