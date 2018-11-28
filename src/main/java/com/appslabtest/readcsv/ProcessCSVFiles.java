@@ -15,6 +15,8 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.primefaces.model.UploadedFile;
 
+import javax.annotation.PostConstruct;
+
 
 public class ProcessCSVFiles {
 	
@@ -25,9 +27,11 @@ public class ProcessCSVFiles {
 	private List<CSVRecord> records_In_ODW_And_In_EDW = new ArrayList<>();//List of records in ODW and in EDW - Print and pass to beyond compare
 	private List<CSVRecord> records_In_EDW_And_In_ODW = new ArrayList<>();//List of records in EDW and in EDW - Print and pass to beyond compare
 	private UploadedFile currentFile;
+
 	
 	Hashtable<Integer, String> recordFinder = new Hashtable<Integer, String>(); 
-	
+
+
 	public UploadedFile getCurrentFile() {
 		return currentFile;
 	}
@@ -84,7 +88,7 @@ public class ProcessCSVFiles {
 		this.records_In_EDW_And_In_ODW = records_In_EDW_And_In_ODW;
 	}
 
-	public Hashtable<Integer, String> getRecordFinder() {
+    public Hashtable<Integer, String> getRecordFinder() {
 		return recordFinder;
 	}
 
@@ -286,8 +290,10 @@ public class ProcessCSVFiles {
 			rowValues = record.get(0) + record.get(1).trim() + record.get(5).trim() + record.get(6).trim() + record.get(7).trim();
 		}else if(currentFile.getFileName().contains("FIA") || currentFile.getFileName().contains("EIA")) {
 			rowValues = record.get(0) + record.get(1).trim();
-		}else {
+		}else if (currentFile.getFileName().contains("IPOLY")){
 			rowValues = record.get(0) + record.get(2).trim();//IPOLYFiles
+		}else{
+            rowValues = record.get(0) + record.get(1);
 		}
 		
 		return rowValues;

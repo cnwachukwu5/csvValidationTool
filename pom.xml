@@ -6,7 +6,7 @@
 	<groupId>com.example</groupId>
 	<artifactId>validationtool</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging> <!-- Change to jar for standalone or war to deploy to server-->
 
 	<name>validationtool</name>
 	<description>validationtool</description>
@@ -25,43 +25,14 @@
 	</properties>
 	<repositories>
 		<repository>
-			<id>primefaces-maven-repository</id>
+			<id>prime-repo</id>
 			<name>Primefaces Maven Repository</name>
 			<url>https://repository.primefaces.org/</url>
+			<layout>default</layout>
 		</repository>
 	</repositories>
-	<dependencies>
-		<!--  <dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-jdbc</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.session</groupId>
-			<artifactId>spring-session-jdbc</artifactId>
-		</dependency>
 
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>-->
+	<dependencies>
 		<!-- joinfaces -->
 		<dependency>
 			<groupId>org.joinfaces</groupId>
@@ -87,6 +58,17 @@
     		<artifactId>commons-csv</artifactId>
     		<version>1.5</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator -->
+		<dependency>
+			<groupId>org.hibernate.validator</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>6.0.13.Final</version>
+		</dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>provided</scope><!-- Remove to make standalone or add to make deployable war app-->
+        </dependency>
 	</dependencies>
 
 	<build>
@@ -96,7 +78,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
+        <finalName>validationtool</finalName>
 	</build>
-
 
 </project>
