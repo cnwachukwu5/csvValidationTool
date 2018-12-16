@@ -139,13 +139,18 @@
 						</li>
 					</ul>
 				</div>
-				<p:fileUpload class="uploader" fileUploadListener="#{fileBean.handleUploadedIPOLYFile}" mode="advanced" dragDropSupport="false" update="uploadform msg" allowTypes="/(\.|\/)(csv)$/" oncomplete="showPolyFile();" />
+				<p:fileUpload class="uploader" id="splitter" fileUploadListener="#{fileBean.handleUploadedIPOLYFile}" mode="advanced" dragDropSupport="false" update="uploadform msg downloadPoly" allowTypes="/(\.|\/)(csv)$/" oncomplete="showPolyFile();" />
 			</b:panel>
 
 			<b:panel title="Downloads" id="downloadPoly" collapsible="false" style="display:none" look="info">
-				<p:panelGrid columns="2">
-					<p:commandButton value="Download Split iPolyFile" ajax="false" action="#{fileBean.downloadRecord(fileBean.iPolyRecords, 'iPolyF10_Split.csv') }" />
-				</p:panelGrid>
+				<h:panelGrid columns="6" border="0" cellpadding="10" cellspacing="5" >
+                    <p:spacer width="50" height="0"/>
+					<p:commandButton value="Download Split iPolyF10 File" ajax="false" action="#{fileBean.downloadRecord(fileBean.iPolyRecords, 'iPolyF10_Split.csv') }" disabled="#{fileBean.isDisableF10()}"/>
+					<p:spacer width="80" height="0"/>
+                    <p:commandButton value="Download Split iPolyF11 File" ajax="false" action="#{fileBean.downloadRecord(fileBean.iPolyF11Records, 'iPolyF11_Split.csv') }" disabled="#{fileBean.isDisableF11()}"/>
+                    <p:spacer width="80" height="0"/>
+                    <p:commandButton value="Reset" action="#{fileBean.reset()}" oncomplete="hideDonwloadPanel();" style="padding: 2px 15px"/>
+				</h:panelGrid>
 			</b:panel>
 			<f:facet name="footer">
     			<b:button value="Close" dismiss="modal" />
@@ -180,7 +185,13 @@
 
 		function showPolyFile(){
 		    $('#downloadPoly').css('display','block');
+		    $('#splitter').css('display','none');
 		}
+
+		function hideDonwloadPanel(){
+            $('#downloadPoly').css('display','none');
+            $('#splitter').css('display','block');
+        }
 	</h:outputScript>
 </h:body>
 </html>
