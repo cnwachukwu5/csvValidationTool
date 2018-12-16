@@ -7,12 +7,15 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.csv.CSVParser;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.SessionScope;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,6 +42,8 @@ public class FileBean {
 	private UploadedFile iPOLYFile;
 	private InputStream targetStream;
 	private InputStream sourceStream;
+	private String[] ipolyArr = null;
+	private List<CSVRecord> iPolyRecords;
 	private ProcessCSVFiles instance = new ProcessCSVFiles();
 	
 	private String message;
@@ -107,6 +112,22 @@ public class FileBean {
 
     public void setiPOLYFile(UploadedFile iPOLYFile) {
         this.iPOLYFile = iPOLYFile;
+    }
+
+    public String[] getIpolyArr() {
+        return ipolyArr;
+    }
+
+    public void setIpolyArr(String[] ipolyArr) {
+        this.ipolyArr = ipolyArr;
+    }
+
+    public List<CSVRecord> getiPolyRecords() {
+        return iPolyRecords;
+    }
+
+    public void setiPolyRecords(List<CSVRecord> iPolyRecords) {
+        this.iPolyRecords = iPolyRecords;
     }
 
     public void handleUploadedFile_Source(FileUploadEvent e) throws IOException {
@@ -198,7 +219,8 @@ public class FileBean {
 	}
 	
 	public void downloadRecord(List<CSVRecord> fileRecord, String filename) {
-		FacesContext facesContext = FacesContext.getCurrentInstance();
+		//Get Response Object and set response header to enable download of file
+	    FacesContext facesContext = FacesContext.getCurrentInstance();
 		ExternalContext externalContext = facesContext.getExternalContext();
 		HttpServletResponse response = (HttpServletResponse) externalContext.getResponse();
 		response.reset();
@@ -238,15 +260,30 @@ public class FileBean {
 		
 	}
 
-	public void handleUploadedIPOLYFile(FileUploadEvent e) throws IOException{
+	public void handleUploadedIPOLYFile(FileUploadEvent e) throws Exception{
         iPOLYFile = e.getFile();
-        if(iPOLYFile.getFileName().contains("IPolyF10")){
-            String[] ipolyArr = convertInputStreamToArray(iPOLYFile.getInputstream());
-            ipolyArr = splitIPOLYF10(ipolyArr);
+        System.out.println("File name: "+ iPOLYFile.getFileName());
+		String[] temp = convertInputStreamToArray(iPOLYFile.getInputstream());
 
-        }else if(iPOLYFile.getFileName().contains("IPolyF11")){
-            String[] ipolyArr = convertInputStreamToArray(iPOLYFile.getInputstream());
-            ipolyArr = splitIPOLYF11(ipolyArr);
+        if(iPOLYFile.getFileName().toLowerCase(Locale.US).contains("IPolyF10".toLowerCase(Locale.US))){
+
+            ipolyArr = splitIPOLYF10(temp);
+            List<String> iPolyArrAsList = convertArrayToList(ipolyArr);
+            System.out.println("Size iPOLYF10: " + iPolyArrAsList.size());
+
+            //Convert the List of Strings to List of CSVRecords
+            List<CSVRecord> csvRecords = convert_List_Strings_To_List_CSVRecord(iPolyArrAsList);
+            setiPolyRecords(csvRecords);
+
+        }else if(iPOLYFile.getFileName().toLowerCase(Locale.US).contains("IPolyF11".toLowerCase(Locale.US))){
+            ipolyArr = splitIPOLYF11(temp);
+            List<String> iPolyArrAsList = convertArrayToList(ipolyArr);
+            System.out.println("Size iPOLYF11: " + iPolyArrAsList.size());
+
+            //Convert the List of Strings to List of CSVRecords
+            List<CSVRecord> csvRecords = convert_List_Strings_To_List_CSVRecord(iPolyArrAsList);
+            setiPolyRecords(csvRecords);
+
         }else{
             //TODO: Print error message here
         }
@@ -273,10 +310,13 @@ public class FileBean {
 	    for(int i = 0; i < strArray.length; i++){
             String val = strArray[i];
             Matcher matcher = pattern.matcher(val);
+
             if(matcher.find()){
+
                 String value = matcher.group(0).trim();
 
                 String pmt_amt = value.substring(0, 12);
+                pmt_amt = format_payment_amt_Field(pmt_amt);
                 String guar_dur = value.substring(12, 17);
                 String pmt_mode = value.substring(17, 22);
                 String pmt_nbr = value.substring(22, 26);
@@ -285,8 +325,8 @@ public class FileBean {
                 String post_retire_death_ben = value.substring(42, 51);
                 String var_units = value.substring(51);
 
-                String newValue = pmt_amt + "  " + guar_dur + "  " + pmt_mode + "  " + pmt_nbr + "  " + pmt_start_date
-                        + "  " + pmt_stop_date+ "  " + post_retire_death_ben + "  " + var_units;
+                String newValue = " " + pmt_amt + "  " + guar_dur + "  " + pmt_mode + "  " + pmt_nbr + "  " + pmt_start_date
+                        + "  " + pmt_stop_date+ "  " + post_retire_death_ben + "  " + var_units + " ";
 
                 String returnVal = val.replaceFirst(value, newValue);
 
@@ -296,15 +336,23 @@ public class FileBean {
         return strArray;
     }
 
+    private String format_payment_amt_Field(String pymt){
+        Double newVal = Integer.parseInt(pymt)/100.0;
+        return newVal.toString();
+    }
+
     private String[] splitIPOLYF11(String[] strArray){
         Pattern pattern = Pattern.compile("\\d{50,}");
         for(int i = 0; i < strArray.length; i++){
             String val = strArray[i];
             Matcher matcher = pattern.matcher(val);
             if(matcher.find()){
+                System.out.println("Length group_0 "+matcher.group(0).length());
                 String value = matcher.group(0).trim();
 
                 String pmt_amt = value.substring(0, 12);
+                pmt_amt = format_payment_amt_Field(pmt_amt);
+
                 String guar_dur = value.substring(12, 17);
                 String LI_CTG_PCT = value.substring(17, 29);
                 String L2_CTG_PCT = value.substring(29, 38);
@@ -316,9 +364,9 @@ public class FileBean {
                 String pmt_TYPE = value.substring(64, 65);
                 String post_retire_death_ben = value.substring(65);
 
-                String newValue = pmt_amt + "  " + guar_dur + "  " + LI_CTG_PCT + "  " + L2_CTG_PCT + "  " + N_CERTAIN
+                String newValue = " " + pmt_amt + "  " + guar_dur + "  " + LI_CTG_PCT + "  " + L2_CTG_PCT + "  " + N_CERTAIN
                         + "  " + PMT_MODE+ "  " + pmt_nbr + "  " + pmt_start_date+ "  " + pmt_stop_date
-                        + "  " + pmt_TYPE+ "  " + post_retire_death_ben;
+                        + "  " + pmt_TYPE+ "  " + post_retire_death_ben + " ";
 
                 String returnVal = val.replaceFirst(value, newValue);
 
@@ -327,6 +375,57 @@ public class FileBean {
         }
 
         return strArray;
+    }
+
+    private List<String> convertArrayToList(String[] temp){
+	    return Arrays.asList(temp);
+    }
+
+//    private void writeListToFile(String filename, List<String> records, Object[] header){
+//	    String NEW_LINE_SEPARATOR = "\n";
+//
+//	    FileWriter fileWriter = null;
+//	    CSVPrinter csvPrinter = null;
+//	    CSVFormat csvFileFormat = CSVFormat.DEFAULT.withRecordSeparator(NEW_LINE_SEPARATOR);
+//
+//	    try{
+//	        fileWriter = new FileWriter(filename);
+//	        csvPrinter = new CSVPrinter(fileWriter, csvFileFormat);
+//
+//	        //Print header if exists
+//            if(header.length > 0)
+//                csvPrinter.printRecord(header);
+//
+//            //Write records to a file
+//            for(String record : records)
+//                csvPrinter.printRecord(record);
+//
+//        }catch(Exception e){
+//            System.out.println("Error in filr");
+//            e.printStackTrace();
+//        }finally {
+//	        try{
+//	            fileWriter.flush();
+//	            fileWriter.close();
+//	            csvPrinter.close();
+//            }catch (Exception e){
+//                System.out.println("Error occurred while closing stream");
+//                e.printStackTrace();
+//            }
+//        }
+//
+//    }
+
+    private List<CSVRecord> convert_List_Strings_To_List_CSVRecord(List<String> records) throws Exception{
+        CSVFormat csvFileFormat = CSVFormat.DEFAULT.withRecordSeparator(System.lineSeparator());
+        List<CSVRecord> csvrecords = new ArrayList<>();
+
+        for(String record : records){
+            List<CSVRecord> csvrecord = CSVParser.parse(record, csvFileFormat).getRecords();
+            csvrecords.add(csvrecord.get(0));
+        }
+
+        return csvrecords;
     }
 
 }
