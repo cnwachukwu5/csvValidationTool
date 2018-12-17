@@ -94,19 +94,14 @@
 			</p:commandButton>
 			
 			<p:confirmDialog global="true" id="uploadCfrm" appendTo="@(filterfiles)">			
-				<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"  update="uploadform showLoader" onclick="closeUploader()" />
+				<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"  update="uploadform showLoader" onclick="closeUploader();" />
 				<p:commandButton value="No" actionListener="#{fileBean.resetStreams()}" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
 			</p:confirmDialog>
 			
-			<p:commandButton widgetVar="errorReport" style="display:none" action="#{fileBean.showMessage()}" onclick="closePanel();" />
+			<p:commandButton widgetVar="errorReport" style="display:none" action="#{fileBean.showMessage('File is too large')}" onclick="closePanel();" />
 			
 			<p:commandButton widgetVar="sortRecords" style="display:none" actionListener="#{fileBean.sortRecords()}"/>
-				
-			
-			
-			
-			
-			
+
 			
 			<p:dialog id="showLoader" widgetVar="showLoader" draggable="false" closable="false" resizable="false" showHeader="false" >
 				<p:outputLabel value="Processing please wait ..."/><br/>
@@ -152,11 +147,14 @@
                     <p:commandButton value="Reset" action="#{fileBean.reset()}" oncomplete="hideDonwloadPanel();" style="padding: 2px 15px"/>
 				</h:panelGrid>
 			</b:panel>
+            <p:commandButton widgetVar="errorReport" style="display:none" action="#{fileBean.showMessage('Operation failed. Only iPOLYF10 and iPOLYF11 are supported')}" onclick="closePanel();" />
 			<f:facet name="footer">
     			<b:button value="Close" dismiss="modal" />
     		</f:facet>	
 		</b:modal>
 	</h:form>
+
+
 	<h:outputScript>
 		$(document).ready(function(){
 			
@@ -170,6 +168,7 @@
 		
 		function closePanel(){
 			$('#filterfiles').modal('hide');
+			$('#splitIpolyFiles').modal('hide');
 		}
 		
 		function OpenUploader(){
