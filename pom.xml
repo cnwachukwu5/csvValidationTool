@@ -6,7 +6,7 @@
 	<groupId>com.example</groupId>
 	<artifactId>validationtool</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging> <!-- Change to jar for standalone or war to deploy to server-->
+	<packaging>jar</packaging> <!-- Change to jar for standalone or war to deploy to server-->
 
 	<name>validationtool</name>
 	<description>validationtool</description>
@@ -67,7 +67,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-tomcat</artifactId>
-            <scope>provided</scope><!-- Remove to make standalone or add to make deployable war app-->
+            <!--<scope>provided</scope>--><!-- Remove to make standalone or add to make deployable war app-->
         </dependency>
 	</dependencies>
 
